@@ -115,7 +115,7 @@ export async function pollTask(taskUrl: string, apiKey: string): Promise<TaskDat
         },
       });
 
-      const data: TaskData = await response.json();
+      const data = (await response.json()) as TaskData;
 
       // Check if request failed
       if (data.ok === false) {

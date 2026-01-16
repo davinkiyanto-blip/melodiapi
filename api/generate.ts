@@ -93,7 +93,7 @@ export default async function handler(
       body: JSON.stringify(body),
     });
 
-    const initData: InitResponse = await initResponse.json();
+    const initData = (await initResponse.json()) as InitResponse;
 
     console.log("Init response status:", initData.status);
     console.log("Init response ok:", initData.ok);
@@ -116,8 +116,9 @@ export default async function handler(
 
     // Step 4: Transform data - change creator field
     const transformedResult: FinalResponse = {
-      ...finalResult,
+      ...(finalResult as any),
       creator: CREATOR_NAME,
+      ok: true,
       completedAt: new Date().toISOString(),
     };
 
