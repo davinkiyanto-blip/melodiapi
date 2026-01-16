@@ -37,7 +37,7 @@ export default async function handler(
 ): Promise<void> {
   // Only allow POST requests
   if (request.method !== "POST") {
-    return response.status(405).json({
+    return void response.status(405).json({
       error: "Method Not Allowed",
       message: "Only POST requests are supported",
     });
@@ -55,7 +55,7 @@ export default async function handler(
     // Validate environment variables
     if (!SUNO_BASE_URL || !SUNO_ENDPOINT_GENERATE || !SUNO_API_KEY || !CREATOR_NAME) {
       console.error("Missing environment variables");
-      return response.status(500).json({
+      return void response.status(500).json({
         error: "Server Configuration Error",
         message: "Missing required environment variables",
       });
@@ -65,7 +65,7 @@ export default async function handler(
     const body: GeneratePayload = request.body;
 
     if (!body) {
-      return response.status(400).json({
+      return void response.status(400).json({
         error: "Bad Request",
         message: "Request body is required",
       });
@@ -74,7 +74,7 @@ export default async function handler(
     // Validate input according to PRD rules
     const validation = validateInput(body);
     if (!validation.valid) {
-      return response.status(400).json({
+      return void response.status(400).json({
         error: "Validation Failed",
         details: validation.errors,
       });
@@ -100,7 +100,7 @@ export default async function handler(
 
     if (!initData.ok || !initData.task_url) {
       console.error("Failed to start generation:", initData);
-      return response.status(500).json({
+      return void response.status(500).json({
         error: "Failed to start generation",
         details: initData,
       });
@@ -125,14 +125,14 @@ export default async function handler(
     console.log("Generation completed successfully");
 
     // Step 5: Return final response
-    return response.status(200).json(transformedResult);
+    return void response.status(200).json(transformedResult);
   } catch (error) {
     console.error("Error in generate handler:", error);
 
     const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
 
     if (errorMessage.includes("polling timeout") || errorMessage.includes("took too long")) {
-      return response.status(504).json({
+      return void response.status(504).json({
         error: "Generation Timeout",
         message: "Music generation took too long. Please try again.",
         details: errorMessage,
@@ -140,14 +140,14 @@ export default async function handler(
     }
 
     if (errorMessage.includes("Generation failed")) {
-      return response.status(502).json({
+      return void response.status(502).json({
         error: "Generation Failed",
         message: "Suno generation process failed",
         details: errorMessage,
       });
     }
 
-    return response.status(500).json({
+    return void response.status(500).json({
       error: "Internal Server Error",
       message: "An unexpected error occurred during processing",
       details: errorMessage,

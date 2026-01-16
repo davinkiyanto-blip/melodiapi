@@ -124,7 +124,7 @@ melodiapi/
 
 ### Production Dependencies (1)
 ```json
-"node-fetch": "^3.3.2"
+"@vercel/node": "^3.0.0"
 ```
 
 ### Development Dependencies (2)
@@ -134,9 +134,9 @@ melodiapi/
 ```
 
 ### Removed (3)
+- ❌ node-fetch (native fetch used in Node 18+)
 - ❌ dotenv (not needed, Vercel uses Dashboard)
 - ❌ tsx (not needed, Node handles .ts files)
-- ❌ vercel (CLI only, not needed in deployment)
 
 **Optimization:** Reduced from 8 to 3 dependencies
 
@@ -186,7 +186,7 @@ melodiapi/
 - ✅ version: 1.0.0
 - ✅ main: api/generate.ts
 - ✅ scripts: build only
-- ✅ dependencies: minimal (node-fetch)
+- [x] dependencies: minimal (@vercel/node)
 - ✅ devDependencies: build only
 - ✅ engines: node 18.x
 
@@ -215,7 +215,7 @@ melodiapi/
 - [x] Code is production-ready
 - [x] No test files in deployment
 - [x] No debug/verbose docs in deployment
-- [x] Dependencies optimized (3 total)
+- [x] Dependencies optimized (2 total)
 - [x] TypeScript strict mode enabled
 - [x] All validation implemented
 - [x] Polling system working
