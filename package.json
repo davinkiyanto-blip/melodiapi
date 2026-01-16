@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Backend AI Music Generator - Suno Wrapper for Vercel",
   "main": "api/generate.ts",
-  "scripts": {
-    "build": "tsc"
-  },
   "keywords": [
     "suno",
     "ai-music",
