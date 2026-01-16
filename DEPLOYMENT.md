@@ -69,7 +69,7 @@ Value: @Dafidxcode
 
 **Timeout:** 300 seconds (5 minutes)
 
-**Node Version:** 18.x
+**Node Version:** 24.x
 
 ---
 
@@ -106,7 +106,7 @@ Expected response: `200 OK` with music records
 ## 📞 Support & Troubleshooting
 
 ### Build Fails
-- Check Node version (18.x required)
+- Check Node version (24.x required)
 - Verify package.json syntax
 - Check tsconfig.json
 

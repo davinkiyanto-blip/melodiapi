@@ -188,7 +188,7 @@ melodiapi/
 - ✅ scripts: build only
 - [x] dependencies: minimal (@vercel/node)
 - ✅ devDependencies: build only
-- ✅ engines: node 18.x
+- ✅ engines: node 24.x (Vercel requirement)
 
 ### tsconfig.json
 - ✅ ES2020 target
