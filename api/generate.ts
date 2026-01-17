@@ -11,7 +11,7 @@
  */
 
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import { validateInput, pollTask, GeneratePayload } from "./utils";
+import { validateInput, GeneratePayload } from "./utils";
 
 // Types for response
 interface InitResponse {
@@ -22,14 +22,6 @@ interface InitResponse {
   [key: string]: any;
 }
 
-interface FinalResponse {
-  creator?: string;
-  ok: boolean;
-  status: string;
-  records?: any[];
-  completedAt?: string;
-  [key: string]: any;
-}
 
 export default async function handler(
   request: VercelRequest,
@@ -106,51 +98,17 @@ export default async function handler(
       });
     }
 
-    console.log("Generation initiated, task_url:", initData.task_url);
+    // Step 3: Return task_url immediately (Plain Text)
+    // The main server will handle polling this URL
+    return void response.status(200).send(initData.task_url);
 
-    // Step 3: Poll the task status until completion
-    console.log("Starting polling loop...");
-    const finalResult = await pollTask(initData.task_url, SUNO_API_KEY);
-
-    console.log("Polling completed, status:", finalResult.status);
-
-    // Step 4: Transform data - change creator field
-    const transformedResult: FinalResponse = {
-      ...(finalResult as any),
-      creator: CREATOR_NAME,
-      ok: true,
-      completedAt: new Date().toISOString(),
-    };
-
-    console.log("Generation completed successfully");
-
-    // Step 5: Return final response
-    return void response.status(200).json(transformedResult);
   } catch (error) {
     console.error("Error in generate handler:", error);
 
-    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-
-    if (errorMessage.includes("polling timeout") || errorMessage.includes("took too long")) {
-      return void response.status(504).json({
-        error: "Generation Timeout",
-        message: "Music generation took too long. Please try again.",
-        details: errorMessage,
-      });
-    }
-
-    if (errorMessage.includes("Generation failed")) {
-      return void response.status(502).json({
-        error: "Generation Failed",
-        message: "Suno generation process failed",
-        details: errorMessage,
-      });
-    }
-
+    // Errors are still JSON for debugging
     return void response.status(500).json({
       error: "Internal Server Error",
-      message: "An unexpected error occurred during processing",
-      details: errorMessage,
+      message: error instanceof Error ? error.message : "Unknown error"
     });
   }
 }

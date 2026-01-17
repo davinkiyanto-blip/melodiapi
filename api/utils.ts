@@ -2,12 +2,6 @@
  * Utility functions for validation and polling
  */
 
-/**
- * Delay function to wait for specified milliseconds
- */
-export const delay = (ms: number): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
 
 /**
  * Validate input according to customMode rules
@@ -91,67 +85,3 @@ export function validateInput(body: any): ValidationResult {
   };
 }
 
-/**
- * Poll task status until completion
- */
-export interface TaskData {
-  status: string;
-  ok?: boolean;
-  records?: any[];
-  [key: string]: any;
-}
-
-export async function pollTask(taskUrl: string, apiKey: string): Promise<TaskData> {
-  const maxAttempts = 60; // Max 5 minutes with 5-second intervals
-  let attempts = 0;
-
-  while (attempts < maxAttempts) {
-    try {
-      const response = await fetch(taskUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = (await response.json()) as TaskData;
-
-      // Check if request failed
-      if (data.ok === false) {
-        // If still pending, continue polling
-        if (data.status === "pending" || data.status === "processing") {
-          await delay(5000);
-          attempts++;
-          continue;
-        }
-        // Otherwise it's a real error
-        throw new Error(`Generation failed with status: ${data.status}. Details: ${JSON.stringify(data)}`);
-      }
-
-      if (data.status === "done") {
-        return data;
-      } else if (data.status === "failed") {
-        throw new Error(`Generation failed with status: ${data.status}. Details: ${JSON.stringify(data)}`);
-      }
-
-      // Status is pending or processing, wait 5 seconds
-      if (data.status === "pending" || data.status === "processing") {
-        await delay(5000);
-        attempts++;
-      } else {
-        // Unknown status
-        throw new Error(`Unknown task status: ${data.status}`);
-      }
-    } catch (error) {
-      if (error instanceof Error && error.message.includes("Generation failed")) {
-        throw error;
-      }
-      // Network or other error, retry
-      await delay(5000);
-      attempts++;
-    }
-  }
-
-  throw new Error("Task polling timeout: Generation took too long (> 5 minutes)");
-}
