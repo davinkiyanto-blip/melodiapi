@@ -35,20 +35,6 @@ export default async function handler(
   request: VercelRequest,
   response: VercelResponse
 ): Promise<void> {
-  // Enable CORS
-  response.setHeader('Access-Control-Allow-Credentials', 'true');
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  response.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
-
-  // Handle OPTIONS request
-  if (request.method === 'OPTIONS') {
-    return void response.status(200).end();
-  }
-
   // Only allow POST requests
   if (request.method !== "POST") {
     return void response.status(405).json({
